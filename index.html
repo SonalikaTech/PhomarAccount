@@ -212,7 +212,8 @@ header{display:flex;align-items:center;justify-content:space-between;gap:12px;ma
       <input id="lUrl" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off">
       <div class="hint">One-time setup. Paste the Google Apps Script web app URL.</div></div>
     <div class="field"><label>Your name</label><input id="lName" maxlength="30" placeholder="e.g. Rahul" autocomplete="name"></div>
-    <div class="field"><label>PIN</label><input id="lPin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="••••"></div>
+    <div class="field"><label>PIN / password</label><input id="lPin" type="password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="••••">
+      <label class="check" style="margin:8px 0 0;font-size:13px"><input type="checkbox" id="lShow"> Show PIN</label></div>
     <div class="err" id="loginErr"></div>
     <button class="btn" id="loginBtn" type="submit">Open</button>
   </form>
@@ -770,6 +771,7 @@ const BIZ = {
     $("loginErr").textContent=msg||"";
   }
   function logout(msg){ store.del("pin"); cfg.pin=""; loaded=false; projects=[]; entries=[]; showLogin(msg); }
+  $("lShow").onchange=e=>{ $("lPin").type=e.target.checked?"text":"password"; };
   $("loginForm").onsubmit=async ev=>{
     ev.preventDefault();
     const url=(SCRIPT_URL||$("lUrl").value.trim()); const name=$("lName").value.trim(); const pin=$("lPin").value.trim();
