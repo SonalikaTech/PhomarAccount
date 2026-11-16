@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f4d3a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Phomar">
+<title>Phomar Accounts</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231f4d3a'/%3E%3Ctext x='32' y='44' font-size='34' font-family='Arial' font-weight='bold' fill='white' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f6f4ef; --card:#ffffff; --ink:#1d1b16; --muted:#6f6a5f; --line:#e7e2d8;
+  --brand:#1f4d3a; --in:#1f7a4d; --in-bg:#e6f3ec;
+  --out:#b4442f; --out-bg:#fbeae6; --due:#a86a00; --due-bg:#fdf1dc;
+  --save:#1d5fa8; --save-bg:#e6effa; --r:16px;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#14130f; --card:#1e1c17; --ink:#f1ede4; --muted:#a49d8f; --line:#2f2c25;
+    --brand:#7cc4a0; --in:#6fd09b; --in-bg:#1b2e24; --out:#f08f7c; --out-bg:#35201b;
+    --due:#f0b85a; --due-bg:#33291a; --save:#82b4f0; --save-bg:#1b2738; }
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Plus Jakarta Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:760px;margin:0 auto;padding:calc(16px + env(safe-area-inset-top)) 16px 110px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 0 16px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo .mark{width:38px;height:38px;border-radius:11px;background:var(--brand);color:var(--bg);display:grid;place-items:center;font-weight:800;font-size:18px}
+.logo h1{font-size:20px;margin:0;font-weight:800;letter-spacing:-.02em}
+.logo small{display:block;color:var(--muted);font-size:12px;font-weight:500}
+.hright{display:flex;align-items:center;gap:4px}
+.btn{border:0;border-radius:12px;padding:11px 16px;font-weight:700;cursor:pointer;background:var(--brand);color:var(--bg)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.in{background:var(--in);color:#fff}
+.btn.out{background:var(--out);color:#fff}
+.btn.danger{background:transparent;color:var(--out);border:1px solid var(--out)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.icon-btn{border:0;background:transparent;cursor:pointer;padding:8px 10px;border-radius:10px;color:var(--muted);font-size:18px;line-height:1}
+.icon-btn:hover{background:var(--line)}
+.spin{animation:rot 1s linear infinite;display:inline-block}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:620px){.grid{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
+.stat .lbl{font-size:12px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:6px}
+.stat .lbl i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.stat .val{font-size:20px;font-weight:800;margin-top:4px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stat.big{grid-column:1/-1;background:var(--brand);border:0;color:var(--bg)}
+.stat.big .lbl{color:inherit;opacity:.8}
+.stat.big .val{font-size:28px}
+.stat.big .sub{font-size:12px;opacity:.85;margin-top:2px}
+
+.toolbar{display:flex;gap:8px;align-items:center;margin:22px 0 12px;flex-wrap:wrap}
+.toolbar h2{font-size:16px;margin:0;flex:1;font-weight:800}
+.seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:3px}
+.seg button{border:0;background:transparent;padding:6px 10px;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;color:var(--muted)}
+.seg button.on{background:var(--brand);color:var(--bg)}
+.search{width:100%;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);margin-bottom:12px;font-size:16px}
+
+.plist{display:flex;flex-direction:column;gap:10px}
+.pcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;cursor:pointer;transition:transform .08s}
+.pcard:active{transform:scale(.99)}
+.pcard .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.pcard .name{font-weight:800;font-size:16px}
+.pcard .client{font-size:13px;color:var(--muted);margin-top:2px}
+.tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.tag.active{background:var(--save-bg);color:var(--save)}
+.tag.done{background:var(--in-bg);color:var(--in)}
+.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:12px 0 8px;display:flex}
+.bar span{display:block;height:100%}
+.mini{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.mini div{font-size:11px;color:var(--muted);font-weight:600}
+.mini b{display:block;font-size:13.5px;color:var(--ink);font-variant-numeric:tabular-nums;margin-top:1px}
+.c-in{color:var(--in)!important}.c-out{color:var(--out)!important}.c-due{color:var(--due)!important}.c-save{color:var(--save)!important}
+
+.empty{text-align:center;padding:40px 20px;color:var(--muted);background:var(--card);border:1px dashed var(--line);border-radius:var(--r)}
+.empty b{display:block;color:var(--ink);font-size:16px;margin-bottom:6px}
+
+.fab{position:fixed;right:18px;bottom:calc(22px + env(safe-area-inset-bottom));z-index:5;border-radius:999px;padding:15px 22px;box-shadow:0 8px 24px rgba(0,0,0,.18);font-size:15px}
+
+.back{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--muted);font-weight:700;cursor:pointer;padding:6px 0;margin-bottom:8px}
+.dhead{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:14px}
+.dhead h2{margin:0;font-size:22px;font-weight:800;letter-spacing:-.02em}
+.dhead .client{color:var(--muted);font-size:14px;margin-top:2px}
+.dnote{font-size:13px;color:var(--muted);margin-top:6px;white-space:pre-wrap}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 20px}
+.actions .btn{padding:14px;font-size:15px}
+.elist{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.erow{display:flex;gap:12px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.erow:last-child{border-bottom:0}
+.erow .dot{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:800;flex-shrink:0}
+.erow .dot.in{background:var(--in-bg);color:var(--in)}
+.erow .dot.out{background:var(--out-bg);color:var(--out)}
+.erow .mid{flex:1;min-width:0}
+.erow .t{font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.erow .s{font-size:12px;color:var(--muted);margin-top:2px}
+.erow .amt{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.catsum{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.catsum span{font-size:12px;background:var(--out-bg);color:var(--out);padding:4px 10px;border-radius:999px;font-weight:600}
+
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;z-index:20}
+.overlay.show{display:flex}
+@media(min-width:620px){.overlay{align-items:center}}
+.sheet{background:var(--card);width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:20px 20px calc(20px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto}
+@media(min-width:620px){.sheet{border-radius:20px}}
+.sheet h3{margin:0 0 14px;font-size:18px;font-weight:800}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:13px;font-weight:700;margin-bottom:5px;color:var(--muted)}
+.field input,.field select,.field textarea{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);font-size:16px}
+.field textarea{min-height:64px;resize:vertical}
+.field .hint{font-size:12px;color:var(--muted);margin-top:4px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:7px 12px;font-size:13px;font-weight:600;cursor:pointer}
+.chips button.on{background:var(--out);border-color:var(--out);color:#fff}
+.sheet .foot{display:flex;gap:10px;margin-top:16px}
+.sheet .foot .btn{flex:1;padding:13px}
+.err{color:var(--out);font-size:13px;margin-top:8px;min-height:1em}
+.banner{background:var(--due-bg);color:var(--due);border-radius:12px;padding:10px 14px;font-size:13px;font-weight:600;margin-bottom:12px;display:none}
+.banner.show{display:block}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s;z-index:30}
+.toast.show{opacity:1}
+.hidden{display:none!important}
+.skeleton{height:80px;border-radius:var(--r);background:linear-gradient(90deg,var(--card),var(--line),var(--card));background-size:200% 100%;animation:sh 1.2s infinite;margin-bottom:10px}
+@keyframes sh{to{background-position:-200% 0}}
+
+/* login */
+.login{max-width:400px;margin:8vh auto 0;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px}
+.login .mark{width:52px;height:52px;border-radius:14px;background:var(--brand);color:var(--bg);display:grid;place-items:center;font-weight:800;font-size:24px;margin-bottom:14px}
+.login h2{margin:0 0 4px;font-size:22px}
+.login p{margin:0 0 18px;color:var(--muted);font-size:14px}
+.login .btn{width:100%;padding:14px;font-size:15px}
+</style>
+</head>
+<body>
+
+<!-- ===================== LOGIN ===================== -->
+<div class="wrap hidden" id="loginView">
+  <form class="login" id="loginForm">
+    <div class="mark">P</div>
+    <h2>Phomar Accounts</h2>
+    <p>Enter your PIN to open the project accounts.</p>
+    <div class="field" id="urlField"><label>App server URL</label>
+      <input id="lUrl" placeholder="https://script.google.com/macros/s/.../exec" autocomplete="off">
+      <div class="hint">One-time setup. Paste the Google Apps Script web app URL.</div></div>
+    <div class="field"><label>Your name</label><input id="lName" maxlength="30" placeholder="e.g. Rahul" autocomplete="name"></div>
+    <div class="field"><label>PIN</label><input id="lPin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="••••"></div>
+    <div class="err" id="loginErr"></div>
+    <button class="btn" id="loginBtn" type="submit">Open</button>
+  </form>
+</div>
+
+<!-- ===================== APP ===================== -->
+<div class="wrap hidden" id="appView">
+  <header>
+    <div class="logo">
+      <div class="mark">P</div>
+      <div><h1>Phomar Accounts</h1><small id="whoLine">Project-wise money tracker</small></div>
+    </div>
+    <div class="hright">
+      <button class="icon-btn" id="refreshBtn" title="Refresh">⟳</button>
+      <button class="icon-btn" id="logoutBtn" title="Log out" style="font-size:13px;font-weight:700">Log out</button>
+    </div>
+  </header>
+
+  <div class="banner" id="banner"></div>
+
+  <section id="listView">
+    <div class="grid" id="overall"></div>
+    <div class="toolbar">
+      <h2>Projects</h2>
+      <div class="seg" id="filterSeg">
+        <button data-f="active" class="on">Ongoing</button>
+        <button data-f="done">Completed</button>
+        <button data-f="all">All</button>
+      </div>
+    </div>
+    <input class="search" id="search" placeholder="Search project or client…">
+    <div class="plist" id="plist"><div class="skeleton"></div><div class="skeleton"></div></div>
+  </section>
+
+  <section id="detailView" class="hidden">
+    <button class="back" id="backBtn">← All projects</button>
+    <div class="dhead">
+      <div>
+        <h2 id="dName"></h2>
+        <div class="client" id="dClient"></div>
+        <div class="dnote" id="dNote"></div>
+      </div>
+      <button class="icon-btn" id="editProjBtn" title="Edit project">✎</button>
+    </div>
+    <div class="grid" id="dStats"></div>
+    <div class="bar" id="dBar" style="height:10px"></div>
+    <div class="actions">
+      <button class="btn in" id="addInBtn">+ Payment received</button>
+      <button class="btn out" id="addOutBtn">− Add expense</button>
+    </div>
+    <div class="toolbar" style="margin-top:4px">
+      <h2>Transactions</h2>
+      <div class="seg" id="eSeg">
+        <button data-e="all" class="on">All</button>
+        <button data-e="in">Received</button>
+        <button data-e="out">Expenses</button>
+      </div>
+    </div>
+    <div class="catsum" id="catSum"></div>
+    <div id="elist"></div>
+  </section>
+</div>
+
+<button class="btn fab hidden" id="fab">+ New project</button>
+
+<!-- Project modal -->
+<div class="overlay" id="projModal">
+  <form class="sheet" id="projForm">
+    <h3 id="projTitle">New project</h3>
+    <div class="field"><label>Project name *</label><input id="pName" maxlength="80" placeholder="e.g. Sharma Wedding Shoot"></div>
+    <div class="field"><label>Client name</label><input id="pClient" maxlength="80" placeholder="e.g. Rakesh Sharma"></div>
+    <div class="row2">
+      <div class="field"><label>Final deal amount (₹) *</label><input id="pFinal" type="number" inputmode="decimal" min="0" step="any" placeholder="0"></div>
+      <div class="field"><label>Status</label>
+        <select id="pStatus"><option value="active">Ongoing</option><option value="done">Completed</option></select></div>
+    </div>
+    <div class="field"><label>Note</label><textarea id="pNote" maxlength="500" placeholder="Any details (optional)"></textarea></div>
+    <div class="err" id="projErr"></div>
+    <div class="foot">
+      <button type="button" class="btn ghost" data-close>Cancel</button>
+      <button type="submit" class="btn" id="projSave">Save</button>
+    </div>
+    <button type="button" class="btn danger hidden" id="projDelete" style="width:100%;margin-top:10px">Delete project</button>
+  </form>
+</div>
+
+<!-- Entry modal -->
+<div class="overlay" id="entryModal">
+  <form class="sheet" id="entryForm">
+    <h3 id="entryTitle">Payment received</h3>
+    <div class="row2">
+      <div class="field"><label>Amount (₹) *</label><input id="eAmt" type="number" inputmode="decimal" min="0" step="any" placeholder="0"></div>
+      <div class="field"><label>Date *</label><input id="eDate" type="date"></div>
+    </div>
+    <div class="field" id="catField"><label>Expense category</label><div class="chips" id="catChips"></div></div>
+    <div class="field" id="modeField"><label>Payment mode</label>
+      <select id="eMode"><option>Cash</option><option>UPI</option><option>Bank transfer</option><option>Cheque</option></select>
+    </div>
+    <div class="field"><label>Note</label><input id="eNote" maxlength="200" placeholder="e.g. Advance / 2nd installment"></div>
+    <div class="err" id="entryErr"></div>
+    <div class="foot">
+      <button type="button" class="btn ghost" data-close>Cancel</button>
+      <button type="submit" class="btn" id="entrySave">Save</button>
+    </div>
+    <button type="button" class="btn danger hidden" id="entryDelete" style="width:100%;margin-top:10px">Delete entry</button>
+  </form>
+</div>
+
+<!-- Confirm modal -->
+<div class="overlay" id="confirmModal">
+  <div class="sheet">
+    <h3 id="confirmText">Are you sure?</h3>
+    <div class="foot">
+      <button class="btn ghost" data-close>No</button>
+      <button class="btn out" id="confirmYes">Yes, delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================================================
+   SETUP: paste your Google Apps Script web app URL between the quotes.
+   If left empty, the app asks for it on first open.
+   ===================================================================== */
+const SCRIPT_URL = "";
+
+(function(){
+  const $ = id => document.getElementById(id);
+  const CATS = ["Material","Labour","Transport","Equipment","Food","Other"];
+  const fmt = n => "₹" + Math.round(Number(n)||0).toLocaleString("en-IN");
+  const today = () => { const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); };
+  const fdate = s => { if(!s) return ""; const [y,m,d]=String(s).split("-"); const M=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]; return (y&&m&&d)?`${+d} ${M[+m-1]} ${y}`:s; };
+  const esc = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const store = {
+    get(k){ try{ return localStorage.getItem("phomar_"+k)||""; }catch(_){ return ""; } },
+    set(k,v){ try{ localStorage.setItem("phomar_"+k,v); }catch(_){} },
+    del(k){ try{ localStorage.removeItem("phomar_"+k); }catch(_){} }
+  };
+
+  let cfg = { url: SCRIPT_URL || store.get("url"), pin: store.get("pin"), name: store.get("name") };
+  let projects=[], entries=[], loaded=false, busy=false;
+  let filter="active", eFilter="all", query="";
+  let currentId=null, editingProj=null, editingEntry=null, entryKind="in", entryCat="Material";
+
+  /* ---------------- API ---------------- */
+  async function apiList(){
+    const u = cfg.url + (cfg.url.includes("?")?"&":"?") + "action=list&pin=" + encodeURIComponent(cfg.pin) + "&t=" + Date.now();
+    const r = await fetch(u, {method:"GET", redirect:"follow"});
+    return r.json();
+  }
+  async function apiPost(action, data){
+    const r = await fetch(cfg.url, {method:"POST", redirect:"follow",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body: JSON.stringify({pin:cfg.pin, action, data})});
+    return r.json();
+  }
+  function apply(res){
+    if(!res || !res.ok){ const e=new Error(res&&res.error||"FAILED"); e.code=res&&res.error; throw e; }
+    projects = res.data.projects||[]; entries = res.data.entries||[]; loaded=true; render();
+  }
+  async function refresh(silent){
+    if(busy) return; busy=true;
+    const rb=$("refreshBtn"); rb.innerHTML='<span class="spin">⟳</span>';
+    try{ apply(await apiList()); banner(""); }
+    catch(err){
+      if(err.code==="WRONG_PIN"){ logout("PIN changed or incorrect. Please log in again."); }
+      else if(!silent || !loaded) banner("Couldn't load data. Check your internet and tap ⟳ to retry.");
+    }
+    finally{ busy=false; rb.textContent="⟳"; }
+  }
+  async function write(action, data){
+    const res = await apiPost(action, data);
+    apply(res);
+  }
+  function errMsg(err){
+    if(err && err.code==="WRONG_PIN") return "Wrong PIN. Please log in again.";
+    return "Not saved. Check your internet and try again.";
+  }
+
+  /* ---------------- UI helpers ---------------- */
+  function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),2200); }
+  function banner(msg){ const b=$("banner"); b.textContent=msg||""; b.classList.toggle("show",!!msg); }
+
+  function totals(pid){
+    let rec=0, spent=0; const cats={};
+    for(const e of entries){ if(e.projectId!==pid) continue;
+      const a=Number(e.amount)||0;
+      if(e.kind==="in") rec+=a; else { spent+=a; const c=e.category||"Other"; cats[c]=(cats[c]||0)+a; } }
+    const p=projects.find(x=>x.id===pid); const final=Number(p&&p.finalAmount)||0;
+    return {final, rec, spent, balance: rec-spent, due: Math.max(0, final-rec), extra: Math.max(0, rec-final), cats};
+  }
+  const statHTML=(lbl,val,color)=>`<div class="stat"><div class="lbl"><i style="background:${color}"></i>${lbl}</div><div class="val">${val}</div></div>`;
+  function barHTML(t){
+    const base=Math.max(t.final,t.rec,1); const p=Math.min(100,t.rec/base*100);
+    return `<span style="width:${p}%;background:var(--in)"></span><span style="width:${100-p}%;background:var(--due);opacity:.35"></span>`;
+  }
+
+  function renderOverall(){
+    let F=0,R=0,S=0,D=0;
+    for(const p of projects){ const t=totals(p.id); F+=t.final; R+=t.rec; S+=t.spent; D+=t.due; }
+    $("overall").innerHTML =
+      `<div class="stat big"><div class="lbl">Cash in hand (Received − Spent)</div><div class="val">${fmt(R-S)}</div><div class="sub">${projects.length} project${projects.length===1?"":"s"} · Total deal value ${fmt(F)}</div></div>`+
+      statHTML("Received from clients",`<span class="c-in">${fmt(R)}</span>`,"var(--in)")+
+      statHTML("Total spent",`<span class="c-out">${fmt(S)}</span>`,"var(--out)")+
+      statHTML("Pending from clients",`<span class="c-due">${fmt(D)}</span>`,"var(--due)")+
+      statHTML("Expected profit",`<span class="c-save">${fmt(F-S)}</span>`,"var(--save)");
+  }
+
+  function renderList(){
+    const box=$("plist"); if(!loaded) return;
+    let list=projects.slice();
+    if(filter!=="all") list=list.filter(p=>(p.status||"active")===filter);
+    if(query){ const q=query.toLowerCase(); list=list.filter(p=>(p.name||"").toLowerCase().includes(q)||(p.client||"").toLowerCase().includes(q)); }
+    list.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    if(!projects.length){ box.innerHTML=`<div class="empty"><b>No projects yet</b>Tap "+ New project" below to add your first one.</div>`; return; }
+    if(!list.length){ box.innerHTML=`<div class="empty">No projects match this filter.</div>`; return; }
+    box.innerHTML=list.map(p=>{ const t=totals(p.id); const st=p.status||"active";
+      return `<div class="pcard" data-id="${esc(p.id)}">
+        <div class="top"><div><div class="name">${esc(p.name)}</div><div class="client">${p.client?("👤 "+esc(p.client)+" · "):""}Deal ${fmt(t.final)}</div></div>
+        <span class="tag ${st}">${st==="done"?"Completed":"Ongoing"}</span></div>
+        <div class="bar">${barHTML(t)}</div>
+        <div class="mini">
+          <div>Received<b class="c-in">${fmt(t.rec)}</b></div>
+          <div>Spent<b class="c-out">${fmt(t.spent)}</b></div>
+          <div>Balance<b class="c-save">${fmt(t.balance)}</b></div>
+          <div>Pending<b class="c-due">${fmt(t.due)}</b></div>
+        </div></div>`; }).join("");
+  }
+
+  function renderDetail(){
+    const p=projects.find(x=>x.id===currentId);
+    if(!p){ showList(); return; }
+    const t=totals(p.id);
+    $("dName").textContent=p.name||"";
+    $("dClient").textContent=(p.client?("👤 "+p.client+" · "):"")+((p.status||"active")==="done"?"Completed":"Ongoing");
+    $("dNote").textContent=p.note||"";
+    $("dStats").innerHTML=
+      `<div class="stat big"><div class="lbl">Final deal amount</div><div class="val">${fmt(t.final)}</div><div class="sub">${fmt(t.rec)} received so far${t.extra?` · ${fmt(t.extra)} extra received`:""}</div></div>`+
+      statHTML("Received",`<span class="c-in">${fmt(t.rec)}</span>`,"var(--in)")+
+      statHTML("Spent",`<span class="c-out">${fmt(t.spent)}</span>`,"var(--out)")+
+      statHTML("Balance left",`<span class="c-save">${fmt(t.balance)}</span>`,"var(--save)")+
+      statHTML("Pending from client",`<span class="c-due">${fmt(t.due)}</span>`,"var(--due)");
+    $("dBar").innerHTML=barHTML(t);
+    const cs=Object.entries(t.cats).sort((a,b)=>b[1]-a[1]);
+    $("catSum").innerHTML=(eFilter!=="in"&&cs.length)?cs.map(([c,a])=>`<span>${esc(c)}: ${fmt(a)}</span>`).join(""):"";
+
+    let list=entries.filter(e=>e.projectId===p.id);
+    if(eFilter!=="all") list=list.filter(e=>e.kind===eFilter);
+    list.sort((a,b)=>String(b.date||"").localeCompare(String(a.date||""))||(b.createdAt||0)-(a.createdAt||0));
+    if(!list.length){ $("elist").innerHTML=`<div class="empty">No transactions yet. Use the buttons above to add one.</div>`; return; }
+    $("elist").innerHTML=`<div class="elist">`+list.map(e=>{
+      const isIn=e.kind==="in";
+      const title=e.note||(isIn?"Payment received":(e.category||"Expense"));
+      const meta=[fdate(e.date), isIn?(e.mode||""):(e.category||""), e.by?("by "+e.by):""].filter(Boolean).join(" · ");
+      return `<div class="erow" data-eid="${esc(e.id)}"><div class="dot ${isIn?"in":"out"}">${isIn?"↓":"↑"}</div>
+        <div class="mid"><div class="t">${esc(title)}</div><div class="s">${esc(meta)}</div></div>
+        <div class="amt ${isIn?"c-in":"c-out"}">${isIn?"+":"−"}${fmt(e.amount)}</div></div>`; }).join("")+`</div>`;
+  }
+
+  function render(){ renderOverall(); if(currentId) renderDetail(); else renderList(); }
+  function setSeg(id,attr,val){ $(id).querySelectorAll("button").forEach(b=>b.classList.toggle("on",b.dataset[attr]===val)); }
+  function showList(){ currentId=null; $("detailView").classList.add("hidden"); $("listView").classList.remove("hidden"); $("fab").classList.remove("hidden"); render(); window.scrollTo(0,0); }
+  function showDetail(id){ currentId=id; eFilter="all"; setSeg("eSeg","e","all"); $("listView").classList.add("hidden"); $("detailView").classList.remove("hidden"); $("fab").classList.add("hidden"); render(); window.scrollTo(0,0); }
+
+  /* ---------------- modals ---------------- */
+  const open=id=>$(id).classList.add("show");
+  const close=id=>$(id).classList.remove("show");
+  document.querySelectorAll(".overlay").forEach(o=>o.addEventListener("click",e=>{ if(e.target===o||e.target.hasAttribute("data-close")) close(o.id); }));
+  let confirmFn=null;
+  function ask(text,fn){ $("confirmText").textContent=text; confirmFn=fn; open("confirmModal"); }
+  $("confirmYes").onclick=async()=>{ const f=confirmFn; confirmFn=null; close("confirmModal"); if(f) await f(); };
+
+  function openProj(p){
+    editingProj=p||null;
+    $("projTitle").textContent=p?"Edit project":"New project";
+    $("pName").value=p?p.name:""; $("pClient").value=p?p.client:"";
+    $("pFinal").value=p?p.finalAmount:""; $("pStatus").value=p?(p.status||"active"):"active"; $("pNote").value=p?p.note:"";
+    $("projErr").textContent=""; $("projDelete").classList.toggle("hidden",!p);
+    open("projModal");
+  }
+  function drawChips(){ $("catChips").innerHTML=CATS.map(c=>`<button type="button" class="${c===entryCat?"on":""}" data-c="${c}">${c}</button>`).join(""); }
+  function openEntry(kind,e){
+    editingEntry=e||null; entryKind=e?e.kind:kind;
+    const isIn=entryKind==="in";
+    $("entryTitle").textContent=(e?"Edit: ":"")+(isIn?"Payment received":"Expense");
+    $("entrySave").className="btn "+(isIn?"in":"out");
+    $("catField").classList.toggle("hidden",isIn); $("modeField").classList.toggle("hidden",!isIn);
+    $("eAmt").value=e?e.amount:""; $("eDate").value=(e&&e.date)||today(); $("eNote").value=e?e.note:"";
+    $("eMode").value=(e&&e.mode)||"UPI"; entryCat=(e&&e.category)||"Material"; drawChips();
+    $("entryErr").textContent=""; $("entryDelete").classList.toggle("hidden",!e);
+    open("entryModal");
+  }
+  $("catChips").onclick=e=>{ const b=e.target.closest("button"); if(!b) return; entryCat=b.dataset.c; drawChips(); };
+
+  $("projForm").onsubmit=async ev=>{
+    ev.preventDefault();
+    const name=$("pName").value.trim(); const fin=parseFloat($("pFinal").value);
+    if(!name){ $("projErr").textContent="Please enter a project name."; return; }
+    if(!(fin>=0)){ $("projErr").textContent="Please enter a valid final amount."; return; }
+    const isNew=!editingProj;
+    const data={ id: isNew?("p"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)):editingProj.id,
+      name, client:$("pClient").value.trim(), finalAmount:fin, status:$("pStatus").value, note:$("pNote").value.trim(),
+      createdAt: isNew?Date.now():editingProj.createdAt, by: isNew?cfg.name:(editingProj.by||cfg.name) };
+    $("projSave").disabled=true; $("projSave").textContent="Saving…";
+    try{ await write("saveProject",data); close("projModal"); toast(isNew?"Project created":"Project updated"); if(isNew) showDetail(data.id); }
+    catch(err){ $("projErr").textContent=errMsg(err); }
+    $("projSave").disabled=false; $("projSave").textContent="Save";
+  };
+  $("projDelete").onclick=()=>{
+    const p=editingProj; if(!p) return; close("projModal");
+    ask(`Delete "${p.name}" and all its transactions?`, async()=>{
+      try{ await write("deleteProject",{id:p.id}); toast("Project deleted"); showList(); }catch(err){ toast(errMsg(err)); }
+    });
+  };
+
+  $("entryForm").onsubmit=async ev=>{
+    ev.preventDefault(); if(!currentId) return;
+    const amt=parseFloat($("eAmt").value);
+    if(!(amt>0)){ $("entryErr").textContent="Amount must be more than 0."; return; }
+    const isNew=!editingEntry;
+    const data={ id: isNew?("e"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)):editingEntry.id,
+      projectId:currentId, kind:entryKind, amount:amt, date:$("eDate").value||today(), note:$("eNote").value.trim(),
+      mode: entryKind==="in"?$("eMode").value:"", category: entryKind==="out"?entryCat:"",
+      createdAt: isNew?Date.now():editingEntry.createdAt, by: isNew?cfg.name:(editingEntry.by||cfg.name) };
+    $("entrySave").disabled=true; $("entrySave").textContent="Saving…";
+    try{ await write("saveEntry",data); close("entryModal"); toast(isNew?(entryKind==="in"?"Payment added":"Expense added"):"Entry updated"); }
+    catch(err){ $("entryErr").textContent=errMsg(err); }
+    $("entrySave").disabled=false; $("entrySave").textContent="Save";
+  };
+  $("entryDelete").onclick=()=>{
+    const e=editingEntry; if(!e) return; close("entryModal");
+    ask(`Delete the ${fmt(e.amount)} entry?`, async()=>{
+      try{ await write("deleteEntry",{id:e.id}); toast("Entry deleted"); }catch(err){ toast(errMsg(err)); }
+    });
+  };
+
+  /* ---------------- events ---------------- */
+  $("fab").onclick=()=>openProj(null);
+  $("backBtn").onclick=showList;
+  $("editProjBtn").onclick=()=>{ const p=projects.find(x=>x.id===currentId); if(p) openProj(p); };
+  $("addInBtn").onclick=()=>openEntry("in");
+  $("addOutBtn").onclick=()=>openEntry("out");
+  $("plist").onclick=e=>{ const c=e.target.closest(".pcard"); if(c) showDetail(c.dataset.id); };
+  $("elist").onclick=e=>{ const r=e.target.closest(".erow"); if(!r) return; const en=entries.find(x=>x.id===r.dataset.eid); if(en) openEntry(en.kind,en); };
+  $("filterSeg").onclick=e=>{ const b=e.target.closest("button"); if(!b) return; filter=b.dataset.f; setSeg("filterSeg","f",filter); renderList(); };
+  $("eSeg").onclick=e=>{ const b=e.target.closest("button"); if(!b) return; eFilter=b.dataset.e; setSeg("eSeg","e",eFilter); renderDetail(); };
+  $("search").oninput=e=>{ query=e.target.value.trim(); renderList(); };
+  $("refreshBtn").onclick=()=>refresh(false);
+  $("logoutBtn").onclick=()=>ask("Log out from this phone?",async()=>logout(""));
+
+  /* ---------------- login ---------------- */
+  function showLogin(msg){
+    $("appView").classList.add("hidden"); $("fab").classList.add("hidden"); $("loginView").classList.remove("hidden");
+    $("urlField").classList.toggle("hidden", !!SCRIPT_URL);
+    $("lUrl").value=cfg.url||""; $("lName").value=cfg.name||""; $("lPin").value="";
+    $("loginErr").textContent=msg||"";
+  }
+  function logout(msg){ store.del("pin"); cfg.pin=""; loaded=false; projects=[]; entries=[]; showLogin(msg); }
+  $("loginForm").onsubmit=async ev=>{
+    ev.preventDefault();
+    const url=(SCRIPT_URL||$("lUrl").value.trim()); const name=$("lName").value.trim(); const pin=$("lPin").value.trim();
+    if(!/^https:\/\/script\.google(usercontent)?\.com\//.test(url)){ $("loginErr").textContent="Please paste a valid Google Apps Script URL."; return; }
+    if(!name){ $("loginErr").textContent="Please enter your name."; return; }
+    if(!pin){ $("loginErr").textContent="Please enter the PIN."; return; }
+    cfg={url,name,pin};
+    $("loginBtn").disabled=true; $("loginBtn").textContent="Checking…";
+    try{
+      const res=await apiList();
+      if(!res.ok){ $("loginErr").textContent=res.error==="WRONG_PIN"?"Wrong PIN.":"Server error: "+res.error; }
+      else { store.set("url",url); store.set("name",name); store.set("pin",pin); startApp(); apply(res); }
+    }catch(_){ $("loginErr").textContent="Couldn't reach the server. Check the URL and that the script is deployed with access “Anyone”."; }
+    $("loginBtn").disabled=false; $("loginBtn").textContent="Open";
+  };
+
+  function startApp(){
+    $("loginView").classList.add("hidden"); $("appView").classList.remove("hidden"); $("fab").classList.remove("hidden");
+    $("whoLine").textContent="Hi "+cfg.name+" 👋";
+    showList();
+  }
+
+  // auto-refresh every 30s while open, and when coming back to the app
+  setInterval(()=>{ if(cfg.pin && document.visibilityState==="visible" && !document.querySelector(".overlay.show")) refresh(true); },30000);
+  document.addEventListener("visibilitychange",()=>{ if(cfg.pin && document.visibilityState==="visible") refresh(true); });
+
+  if(cfg.url && cfg.pin && cfg.name){ startApp(); refresh(false); }
+  else showLogin("");
+})();
+</script>
+</body>
+</html>
